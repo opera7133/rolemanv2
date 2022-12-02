@@ -1,25 +1,28 @@
 {
   "name": "rolemanv2",
-  "version": "1.0.0",
-  "private": true,
-  "license": "MIT",
-  "type": "module",
+  "author": "wamo <ainznino@pm.me>",
+  "description": "Simple Role Manager v2",
+  "version": "2.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/opera7133/rolemanv2.git"
+  },
+  "license": "WTFPL",
   "main": "build/main.js",
   "scripts": {
     "build": "tsc",
-    "build:changelog": "npx @discordx/changelog --root=src",
     "dev": "ts-node-esm src/main.ts",
     "start": "node build/main.js",
     "watch": "nodemon --exec ts-node-esm src/main.ts"
   },
   "dependencies": {
-    "@discordx/importer": "^1.1.10",
-    "@discordx/pagination": "^3.3.1",
     "discord.js": "^14.6.0",
-    "discordx": "^11.4.0"
+    "dotenv": "^16.0.3",
+    "node-cron": "^3.0.2"
   },
   "devDependencies": {
     "@types/node": "^18.11.7",
+    "@types/node-cron": "^3.0.6",
     "nodemon": "^2.0.20",
     "prettier": "^2.7.1",
     "ts-node": "^10.9.1",
