@@ -10,6 +10,7 @@
   "license": "WTFPL",
   "main": "build/main.js",
   "scripts": {
+    "register": "ts-node src/register.ts",
     "build": "tsc",
     "dev": "ts-node-esm src/main.ts",
     "start": "node build/main.js",

@@ -93,7 +93,61 @@ bot.on("messageCreate", (message: Message) => {
   }
 });
 
-const update = ({ message, cid, gid }: { message?: Message, cid?: string, gid?: string }) => {
+bot.on("interactionCreate", async (interaction: any) => {
+  if (!interaction.isCommand()) {
+    return;
+  }
+  const { commandName } = interaction;
+  if (commandName === 'update') {
+    if (interaction.member?.roles.cache.find((r: any) => r.name === "ほぼAdmin")) {
+      update({ interaction })
+    } else {
+      const warnEmbed = new EmbedBuilder()
+        .setColor(0xFFCD30)
+        .setTitle('権限がありません')
+        .setDescription("あなたはこのコマンドを実行する権限を持っていません")
+        .setThumbnail('https://dl.wmsci.com/image/40px-warn.png')
+      interaction.error({ embeds: [warnEmbed] })
+    }
+  }
+  if (commandName === 'christmas') {
+    if (interaction.member?.roles.cache.find((r: any) => r.name === "ほぼAdmin")) {
+      christmas({ interaction })
+    } else {
+      const warnEmbed = new EmbedBuilder()
+        .setColor(0xFFCD30)
+        .setTitle('権限がありません')
+        .setDescription("あなたはこのコマンドを実行する権限を持っていません")
+        .setThumbnail('https://dl.wmsci.com/image/40px-warn.png')
+      interaction.error({ embeds: [warnEmbed] })
+    }
+  }
+  if (commandName === "about") {
+    const infoEmbed = new EmbedBuilder()
+      .setColor(0x0076FF)
+      .setTitle('このBotについて')
+      .setDescription(`技術科部のメンバーのロールを自動更新してくれたりするBotです。\n\n製作者：${process.env.npm_package_author}\nバージョン：${process.env.npm_package_version}`)
+      .setThumbnail('https://dl.wmsci.com/image/40px-info.png')
+    interaction.reply({ embeds: [infoEmbed] })
+  }
+  if (commandName === "help") {
+    const helpEmbed = new EmbedBuilder()
+      .setColor(0x0076FF)
+      .setTitle('使い方')
+      .setThumbnail('https://dl.wmsci.com/image/40px-info.png')
+      .addFields(
+        { name: '@TCLBロール管理V2', value: '部員ロールを付与' },
+        { name: '!!update', value: '学年を更新' },
+        { name: '!!help', value: 'このページ' },
+        { name: '!!about', value: 'このプログラムについて' },
+        { name: '!!exit', value: '終了' },
+        { name: 'その他', value: '季節イベント' },
+      )
+    interaction.reply({ embeds: [helpEmbed] })
+  }
+})
+
+const update = ({ message, interaction, cid, gid }: { message?: Message, interaction?: any, cid?: string, gid?: string }) => {
   const now = new Date().getFullYear()
   if (message) {
     const third = message.guild?.roles.cache.find(r => r.name === "現3年生");
@@ -141,10 +195,32 @@ const update = ({ message, cid, gid }: { message?: Message, cid?: string, gid?: 
       .setDescription('メンバーの学年ロールを自動更新しました。')
       .setThumbnail('https://dl.wmsci.com/image/40px-info.png')
     channel?.send({ embeds: [updateEmbed] })
+  } else if (interaction) {
+    const third = interaction.guild?.roles.cache.find((r: any) => r.name === "現3年生");
+    third?.edit({ name: `${now - 1964}期(${now})卒業生`, color: "Purple" })
+    const second = interaction.guild?.roles.cache.find((r: any) => r.name === "現2年生");
+    second?.edit({ name: "現3年生" })
+    const first = interaction.guild?.roles.cache.find((r: any) => r.name === "現1年生");
+    first?.edit({ name: "現2年生" })
+    let firstColor = "" as ColorResolvable
+    if (first?.hexColor.toLowerCase() === "#f1c40f") {
+      firstColor = "Blue"
+    } else if (first?.hexColor.toLowerCase() === "#e91e63") {
+      firstColor = "Gold"
+    } else {
+      firstColor = "LuminousVividPink"
+    }
+    interaction.guild?.roles.create({ name: "現1年生", color: firstColor })
+    const updateEmbed = new EmbedBuilder()
+      .setColor(0x0076FF)
+      .setTitle('ロールを更新しました')
+      .setDescription('メンバーの学年ロールを自動更新しました。')
+      .setThumbnail('https://dl.wmsci.com/image/40px-info.png')
+    interaction.reply({ embeds: [updateEmbed] })
   }
 }
 
-const christmas = ({ message, cid }: { message?: Message, cid?: string }) => {
+const christmas = ({ message, interaction, cid }: { message?: Message, interaction?: any, cid?: string }) => {
   const christmasEmbed = new EmbedBuilder()
     .setColor(0x00D166)
     .setTitle('Foolay!')
@@ -168,6 +244,17 @@ const christmas = ({ message, cid }: { message?: Message, cid?: string }) => {
     const channel = bot.channels.cache.get(cid) as TextChannel
     channel.send({ embeds: [christmasEmbed] })
     channel.send({ embeds: [pollEmbed] }).then(embedMessage => {
+      embedMessage.react("🇦");
+      embedMessage.react("🇧");
+      embedMessage.react("🇨");
+      embedMessage.react("🇩");
+      embedMessage.react("🇪");
+      embedMessage.react("🇫");
+    })
+  } else if (interaction) {
+    interaction.reply({ content: "メッセージが送信されました", ephemeral: true })
+    interaction.channel.send({ embeds: [christmasEmbed] })
+    interaction.channel.send({ embeds: [pollEmbed] }).then((embedMessage: any) => {
       embedMessage.react("🇦");
       embedMessage.react("🇧");
       embedMessage.react("🇨");
